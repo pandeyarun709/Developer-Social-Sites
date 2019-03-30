@@ -6,23 +6,25 @@ const gravatar = require("gravatar");
 //Load User Model
 const User = require("../../models/User");
 
-//@route   GET api/user/test
-//@desc    Test user api
-//@access  Public
+// @route   GET api/user/test
+// @desc    Test user api
+// @access  Public
 router.get("/test", (req, res) => res.json({ msg: "user test" }));
 
-//@route   GET api/user/register
-//@desc    Register user
-//@access  public
+// @route   POST api/user/register
+// @desc    Register user
+// @access  public
 router.post("/register", (req, res) => {
   //check email already exist or not
   User.findOne({ email: req.body.email }).then(user => {
     if (user) {
       return res.status(400).json({ email: "email already exist" });
     } else {
+
       const avatar = gravatar.url(req.body.email, {
         s: "200", //size
         r: "pg", //rating
+
         d: "mm" //default
       });
       const newUser = new User({
@@ -47,6 +49,32 @@ router.post("/register", (req, res) => {
       });
     }
   });
+});
+
+// @route   POST api/user/register
+// @desc    Register user
+// @access  public
+router.post("/login", (req, res) => {
+
+  const email = req.body.email;
+  const password = req.body.password;
+  // Find user by email
+  User.findOne({ email })
+    .then(user => {
+      if (!user) {
+        return res.status(404).json({ msg: "User not found!!" });
+      }
+
+      // check password
+      bcrypt.compare(password, user.password)
+        .then(isMatch => {
+          if (isMatch) {
+            res.json({ msg: 'Success' });
+          } else {
+            return res.status(400).json({ msg: "password inccorrect" });
+          }
+        });
+    });
 });
 
 module.exports = router;
