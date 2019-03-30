@@ -52,7 +52,7 @@ router.post("/register", (req, res) => {
 });
 
 // @route   POST api/user/register
-// @desc    Register user
+// @desc    Login user
 // @access  public
 router.post("/login", (req, res) => {
 
